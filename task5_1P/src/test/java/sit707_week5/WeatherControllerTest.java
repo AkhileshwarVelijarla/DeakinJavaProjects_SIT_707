@@ -3,6 +3,9 @@ package sit707_week5;
 import org.junit.*;
 import static org.junit.Assert.*;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class WeatherControllerTest {
 
     private static WeatherController wController;
@@ -11,7 +14,6 @@ public class WeatherControllerTest {
 
     @BeforeClass
     public static void setUpBeforeClass() {
-        // Arrange (run once)
         wController = WeatherController.getInstance();
         nHours = wController.getTotalHours();
         temperatures = new double[nHours];
@@ -32,64 +34,71 @@ public class WeatherControllerTest {
     public void testStudentIdentity() {
         String studentId = "224763306";
         assertNotNull("Student ID is null", studentId);
+        assertEquals("224763306", studentId);
     }
 
     @Test
     public void testStudentName() {
         String studentName = "Akhilesh";
         assertNotNull("Student name is null", studentName);
+        assertEquals("Akhilesh", studentName);
     }
 
     @Test
     public void testTemperatureMin() {
-        // Arrange
         double expectedMin = temperatures[0];
 
-        // Act
         for (int i = 1; i < nHours; i++) {
             if (temperatures[i] < expectedMin) {
                 expectedMin = temperatures[i];
             }
         }
 
-        // Assert
         assertEquals(expectedMin, wController.getTemperatureMinFromCache(), 0.0001);
     }
 
     @Test
     public void testTemperatureMax() {
-        // Arrange
         double expectedMax = temperatures[0];
 
-        // Act
         for (int i = 1; i < nHours; i++) {
             if (temperatures[i] > expectedMax) {
                 expectedMax = temperatures[i];
             }
         }
 
-        // Assert
         assertEquals(expectedMax, wController.getTemperatureMaxFromCache(), 0.0001);
     }
 
     @Test
     public void testTemperatureAverage() {
-        // Arrange
         double sum = 0;
 
-        // Act
         for (int i = 0; i < nHours; i++) {
             sum += temperatures[i];
         }
 
         double expectedAverage = sum / nHours;
 
-        // Assert
         assertEquals(expectedAverage, wController.getTemperatureAverageFromCache(), 0.0001);
     }
 
     @Test
     public void testTemperaturePersist() {
-        // Leave unchanged for 5.1P
+        // Arrange
+        int hour = 1;
+        double temperature = 25.5;
+
+        Date fixedDate = new Date(0);
+        SimpleDateFormat sdf = new SimpleDateFormat("H:m:s");
+        String expectedSavedTime = sdf.format(fixedDate);
+
+        wController.setDateSupplier(() -> fixedDate);
+
+        // Act
+        String actualSavedTime = wController.persistTemperature(hour, temperature);
+
+        // Assert
+        assertEquals(expectedSavedTime, actualSavedTime);
     }
 }
